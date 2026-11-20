@@ -21,3 +21,7 @@ Open `index.html` in a modern browser. No account, server, API key, Claude, or i
 ## Privacy and safety
 
 Messages stay in the current browser session and learned word counts stay in local storage on the device. Nothing is sent over the network by this app. Do not enter identifying medical information if publishing screenshots or code. This is an experimental communication aid, not an emergency alert, and does not replace clinical evaluation by a speech-language pathologist/AAC specialist.
+
+## Customize Quick Needs
+
+Choose **Quick needs**. Add a phrase using the text box and **+ Add need** button. Remove any phrase using its **Remove** button. Changes save to this browser's local storage and persist between visits on the same device, unless site data is cleared. **Restore default needs** replaces the customized list with the original options. Changes do not automatically synchronize across devices.
