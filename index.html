@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#101a35"><title>Travis Talk — Yes/No Communicator</title>
+<style>
+:root{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#14213b;background:#f3f6fb}*{box-sizing:border-box}body{margin:0}button{font:inherit;cursor:pointer}button:focus-visible{outline:4px solid #f7b731;outline-offset:3px}.app{max-width:1000px;margin:auto;padding:16px 16px 36px}header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}h1{font-size:clamp(1.35rem,4vw,2rem);margin:0;color:#101a35}small,.helper{color:#54627b}.header-actions,.toolbar{display:flex;gap:8px;flex-wrap:wrap}button{border:0;border-radius:14px;padding:12px 18px;font-weight:750}.quiet{background:#e4e9f2;color:#1b2b49}.primary{background:#203d8a;color:white}.tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:16px}.tab{background:#e2e8f2;color:#284269}.tab[aria-pressed=true]{background:#203d8a;color:#fff}.panel{background:white;border:1px solid #dde4ef;border-radius:22px;padding:clamp(16px,3vw,25px);box-shadow:0 8px 24px #243c6910}.eyebrow{font-size:.8rem;letter-spacing:.12em;font-weight:850;color:#62718a;text-transform:uppercase}.message{margin:8px 0 14px;min-height:74px;background:#f1f5fb;border-radius:14px;padding:16px;font-weight:700;font-size:clamp(1.3rem,3.5vw,2rem);overflow-wrap:anywhere;white-space:pre-wrap}.message:empty::before{content:"The message will appear here";font-weight:500;color:#718099}.question{font-weight:850;font-size:clamp(1.6rem,5vw,3rem);line-height:1.12;text-align:center;margin:22px 0 10px}.choices{font-size:clamp(1.4rem,4.4vw,2.5rem);font-weight:800;line-height:1.45;letter-spacing:.12em;word-break:break-word;text-align:center;min-height:85px;padding:16px;background:#eaf0ff;border-radius:16px;color:#173f97}.question-note{text-align:center;color:#63718a;margin:12px 0 20px}.decisions{display:grid;grid-template-columns:1fr 1fr;gap:12px}.decision{font-size:clamp(1.5rem,5vw,2.5rem);min-height:108px}.yes{background:#13734b;color:white}.no{background:#a52e3c;color:white}.done{background:#123a88;color:white}.controls{display:flex;gap:9px;flex-wrap:wrap;margin-top:16px}.controls button{flex:1 1 130px}.status{font-size:.9rem;color:#51627c;margin-top:13px}.predict{margin:12px 0;padding:12px;background:#eff7f2;border-radius:14px}.predict strong{display:block;margin-bottom:8px}.predict .pill{background:#d9efe2;color:#115a37}.pills{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.pill{background:#ecf2ff;color:#203d8a;padding:8px 12px;font-size:.9rem}.note{font-size:.95rem;color:#52617a;line-height:1.5;margin:16px 2px}.footer{font-size:.85rem;color:#6c7890;padding-top:12px}.hidden{display:none!important}#choiceText{letter-spacing:.06em}.complete{font-size:clamp(1.6rem,5vw,2.6rem);text-align:center;color:#203d8a;font-weight:850}.big{font-size:1.3rem}.toggle{display:flex;align-items:center;gap:8px;font-weight:650}.toggle input{width:20px;height:20px}.keyboard{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:9px;margin-top:14px}.key{background:#e8f0ff;color:#143b81;min-height:66px;padding:8px 2px;font-size:clamp(1.25rem,4vw,1.9rem);border:2px solid #cdddf7}.key:active{background:#b9d3ff}.key.action{font-size:1rem;background:#e7eaf0;color:#20324d}.keyboard-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:12px}.keyboard-actions button{padding:12px 5px}.ranked{margin:12px 0;color:#465672;font-size:.95rem}.ranked strong{color:#203d8a}.onboard{background:#fff4d6;border:1px solid #f5d993;padding:12px;border-radius:12px;margin-top:14px;color:#654b15;font-weight:650}@media(max-width:480px){.app{padding:12px}.panel{border-radius:16px;padding:14px}.choices{min-height:100px}.decision{min-height:105px}.controls button{padding:12px 9px}.header-actions{justify-content:flex-end}.header-actions button{padding:10px}.tab{padding:12px 5px;font-size:.84rem}.keyboard{grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}.key{min-height:59px}}
+</style>
+</head>
+<body><main class="app">
+<header><div><h1>💬 Travis Talk</h1><small>Travis nods YES or shakes NO · Caregiver presses buttons</small></div><div class="header-actions"><button class="quiet" id="speakBtn">🔊 Speak message</button></div></header>
+<div class="tabs" role="group" aria-label="Communication type"><button class="tab" id="spellTab" aria-pressed="true">✍️ Spell a message</button><button class="tab" id="needsTab" aria-pressed="false">⚡ Quick needs</button><button class="tab" id="lettersTab" aria-pressed="false">🔤 Tap letters</button></div>
+<section class="panel">
+<div class="eyebrow">Current message</div><div class="message" id="message" aria-live="polite"></div>
+<div class="predict hidden" id="predictArea"><strong>⚡ Faster word suggestions</strong><div class="pills" id="suggestions"></div><small>Ask Travis whether he means a suggested word. Only choose YES after he nods.</small></div><div class="eyebrow" id="step">Question 1</div>
+<div id="questionArea"><div class="question" id="question">Is your choice in this group?</div><div class="choices" id="choiceText"></div><div class="question-note" id="hint">Show or read this letter. Wait for Travis to nod YES or shake NO.</div><div class="ranked" id="ranked"></div><div class="decisions"><button class="decision yes" id="yesBtn">✓ YES</button><button class="decision no" id="noBtn">✕ NO</button></div></div>
+<div id="keyboardArea" class="hidden"><div class="eyebrow">Tap the letter Travis selects</div><p class="helper">Point to or say a letter. When Travis nods YES, tap that letter. The message updates instantly.</p><div class="keyboard" id="keyboard" aria-label="Letter keyboard"></div><div class="keyboard-actions"><button class="quiet" id="spaceKey">␣ Space</button><button class="quiet" id="deleteKey">⌫ Delete</button><button class="primary" id="speakKey">🔊 Speak</button></div></div>
+<div id="resultArea" class="hidden"><p class="complete" id="result"></p><div class="decisions"><button class="decision done" id="continueBtn">Continue</button><button class="decision quiet" id="undoResultBtn">Undo</button></div></div>
+<div class="controls"><button class="quiet" id="backBtn">↶ Undo response</button><button class="quiet" id="spaceBtn">␣ Space</button><button class="quiet" id="deleteBtn">⌫ Delete</button><button class="quiet" id="restartBtn">↻ Restart choice</button><button class="quiet" id="clearBtn">🗑 Clear message</button></div>
+<div class="status" id="status" role="status" aria-live="polite"></div>
+</section>
+<div class="onboard">Caregiver: explain that <strong>YES</strong> confirms the letter being shown; <strong>NO</strong> skips that letter. Only press a button after you clearly see his response. Stop if he's tired or the response is uncertain.</div>
+<div class="note"><strong>How it works:</strong> Use <strong>Tap letters</strong> to directly add a letter after Travis confirms it. In <strong>Spell a message</strong>, it asks one predicted letter at a time, most likely first. The most likely next letter is asked first, using common English letter patterns and the word being spelled. Each NO moves to the next most likely letter. Word suggestions can save even more answers. Space, Delete, and Speak are available as separate buttons. In Quick needs mode, the same system identifies a common phrase.</div>
+<div class="footer">Designed as a free, private communication aid. No account, camera, microphone, network connection, or AI service is required. Not a medical device or replacement for clinical communication assessment.</div>
+</main>
+<script>
+(()=>{'use strict';
+const $=id=>document.getElementById(id);
+const alphabet='ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+const base='ETAOINSHRDLCUMWFGYPBVKJXQZ';
+const needs=['I am in pain','I need repositioning','I am hot','I am cold','I need suction','I am having trouble breathing','I need a nurse','I am thirsty','My mouth is dry','I am uncomfortable','I am tired','I want to rest','I need to use the bathroom','I want to see my family','I am anxious','Please ask me another question'];
+const commonWords=`i you yes no need want am is are the a to my me it and have can do not please help water pain hot cold nurse family mom dad brother wife home here now later more less stop go stay leave tired uncomfortable scared anxious breathing breathe suction mouth dry reposition move head arm hand leg foot feet back neck stomach chest bathroom toilet hungry thirsty drink food sleep rest medicine medication doctor nurse light dark television tv phone call tell ask feel feeling okay ok good bad better worse hurt hurting where when why what who how someone something this that there here too very much some nothing everything with without for from on in at up down left right higher lower pillow blanket fan music quiet loud turn scratch itch itching wash clean wet dry warm again thank thanks love sorry scared happy sad angry read spell speak message time today tomorrow yesterday friend visitor family hospital bed chair sit stand change position pressure oxygen air mask tube cough swallow`.split(/\s+/);
+const frequent='the be to of and a in that have i it for not on with he as you do at this but his by from they we say her she or an will my one all would there their what so up out if about who get which go me when make can like time no just him know take people into year your good some could them see other than then now look only come its over think also back after use two how our work first well way even new want because any these give day most us is are was were been has had need help water pain nurse please stop yes no'.split(/\s+/);
+const lexicon=[...frequent,...commonWords,...needs.join(' ').toLowerCase().split(/\s+/)].filter(Boolean);
+let mode='spell',phrase='',ordered=[],position=0,history=[],result=null,proposal=null,dismissed=new Set(),needCandidates=[...needs],needAnswers=0;
+let learned={};try{learned=JSON.parse(localStorage.getItem('travis-talk-words')||'{}')||{}}catch(e){}
+function prefix(){return (phrase.match(/[a-z]+$/i)||[''])[0].toLowerCase()}
+function rankLetters(){
+ const pre=prefix(),scores=Object.fromEntries(alphabet.map((l,i)=>[l,(26-i)/100000]));
+ for(const [i,c] of [...base].entries())scores[c]+=(26-i)*.05;
+ // Frequent conversational words count more. After a few letters, matching words dominate.
+ for(let i=0;i<lexicon.length;i++){
+  const w=lexicon[i].replace(/[^a-z]/g,'');if(!w||!w.startsWith(pre)||w.length<=pre.length)continue;
+  const next=w[pre.length].toUpperCase();const weight=(i<frequent.length?12:3)/(1+Math.log2(i+2)*.16);
+  scores[next]+=weight*(pre.length?14:2);
+ }
+ for(const [word,count] of Object.entries(learned)){
+  if(word.startsWith(pre)&&word.length>pre.length){const c=word[pre.length].toUpperCase();if(scores[c]!=null)scores[c]+=Math.min(count,20)*(pre.length?45:8)}
+ }
+ // Non-matching or unusual words remain possible: no letter is ever removed from the full cycle.
+ return alphabet.slice().sort((a,b)=>scores[b]-scores[a]||base.indexOf(a)-base.indexOf(b));
+}
+function learnWord(word){word=word.toLowerCase().replace(/[^a-z]/g,'');if(!word)return;learned[word]=(learned[word]||0)+1;try{localStorage.setItem('travis-talk-words',JSON.stringify(learned))}catch(e){}}
+function saveState(){history.push({phrase,ordered:[...ordered],position,result,proposal,needCandidates:[...needCandidates],needAnswers,dismissed:[...dismissed]});if(history.length>100)history.shift()}
+function undo(){const previous=history.pop();if(!previous){$('status').textContent='Nothing to undo yet.';return}({phrase,ordered,position,result,proposal,needCandidates,needAnswers}=previous);dismissed=new Set(previous.dismissed);render()}
+function resetChoice(){ordered=rankLetters();position=0;result=null;proposal=null;dismissed.clear();needCandidates=[...needs];needAnswers=0;render()}
+function speak(message){if(!message.trim())return;if(!('speechSynthesis' in window)){alert('Speech is not available in this browser.');return}window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(message);u.rate=.85;window.speechSynthesis.speak(u)}
+function addToken(token){saveState();result=token;if(token==='SPACE'){learnWord(prefix());phrase+=' '}else if(token==='BACKSPACE')phrase=phrase.slice(0,-1);else if(token==='SPEAK')speak(phrase);else if(mode==='needs'){phrase+=(phrase?' ':'')+token;speak(token)}else phrase+=token.toLowerCase();proposal=null;dismissed.clear();ordered=rankLetters();position=0;render()}
+function wordSuggestions(){const pre=prefix();if(!pre||mode==='needs')return [];const words=[...new Set([...Object.keys(learned).sort((a,b)=>learned[b]-learned[a]),...lexicon])];return words.filter(w=>w.length>pre.length&&w.startsWith(pre)&&!dismissed.has(w)).slice(0,5)}
+function answer(yes){if(result)return;if(proposal){const w=proposal;saveState();proposal=null;if(yes){phrase=phrase.slice(0,-prefix().length)+w+' ';learnWord(w);result='WORD: '+w;ordered=rankLetters();position=0;dismissed.clear()}else dismissed.add(w);render();return}
+ saveState();if(mode==='needs'){const first=needCandidates.slice(0,Math.ceil(needCandidates.length/2));needCandidates=yes?first:needCandidates.slice(first.length);needAnswers++;if(needCandidates.length===1){result=needCandidates[0];phrase+=(phrase?' ':'')+result;speak(result)}render();return}
+ if(yes){const letter=ordered[position];phrase+=letter.toLowerCase();result=letter;ordered=rankLetters();position=0;dismissed.clear()}else{position++;if(position>=ordered.length){position=0;result='NO LETTER SELECTED'}}render();}
+function selectMode(m){mode=m;history=[];resetChoice()}
+function render(){
+ $('message').textContent=phrase;
+ for(const [tab,m] of [['spellTab','spell'],['needsTab','needs'],['lettersTab','direct']])$(tab).setAttribute('aria-pressed',String(mode===m));
+ $('keyboardArea').classList.toggle('hidden',mode!=='direct');
+ $('questionArea').classList.toggle('hidden',mode==='direct'||!!result);
+ $('resultArea').classList.toggle('hidden',mode==='direct'||!result);
+ $('ranked').textContent='';
+ const suggestions=wordSuggestions();$('predictArea').classList.toggle('hidden',mode==='needs'||!!result||mode==='direct'||(!suggestions.length&&!proposal));$('suggestions').replaceChildren();
+ if(!proposal)for(const w of suggestions){const b=document.createElement('button');b.className='pill';b.textContent='Ask: '+w.toUpperCase()+'?';b.addEventListener('click',()=>{saveState();proposal=w;render()});$('suggestions').append(b)}
+ if(mode==='direct'){$('step').textContent='Direct letter selection';$('status').textContent='Tap a letter only after Travis confirms it. Use the undo button to reverse an accidental selection.';return}
+ if(result){$('step').textContent='Confirmed';$('result').textContent=result==='NO LETTER SELECTED'?'No letter matched — try again or use Tap letters':result.startsWith('WORD:')?'Word selected: '+result.slice(5):mode==='needs'?'Selected: '+result:'Letter selected: '+result;$('continueBtn').textContent=mode==='needs'?'Another need':'Next letter';$('status').textContent='Continue for the next choice. Undo response will remove this selection.';return}
+ if(proposal){$('step').textContent='Confirm suggested word';$('question').textContent='Is the word '+proposal.toUpperCase()+'?';$('choiceText').textContent=proposal.toUpperCase();$('hint').textContent='Caregiver: YES adds the word. NO returns to letter selection.';$('status').textContent='Wait for a clear nod or shake before pressing a button.';return}
+ if(mode==='needs'){const half=needCandidates.slice(0,Math.ceil(needCandidates.length/2));$('step').textContent='Quick needs · Question '+(needAnswers+1);$('question').textContent='Is your need in this group?';$('choiceText').textContent=half.join('  |  ');$('hint').textContent='YES = in the displayed group. NO = in the other group.';$('status').textContent='Caregiver: read the options and wait for a clear answer.';return}
+ const current=ordered[position];$('step').textContent='Predictive letter '+(position+1)+' of '+ordered.length;$('question').textContent='Is your next letter…?';$('choiceText').textContent=current;
+ $('hint').textContent='Travis nods YES to select '+current+'. He shakes NO to see the next most likely letter.';
+ $('ranked').textContent='Coming next: '+ordered.slice(position+1,position+6).join(' · ');
+ $('status').textContent='The order adapts to the current word and words used on this device. Every letter stays available.';
+}
+for(const l of alphabet){const b=document.createElement('button');b.className='key';b.textContent=l;b.setAttribute('aria-label','Add letter '+l);b.addEventListener('click',()=>addToken(l));$('keyboard').append(b)}
+$('yesBtn').addEventListener('click',()=>answer(true));$('noBtn').addEventListener('click',()=>answer(false));
+$('backBtn').addEventListener('click',undo);$('undoResultBtn').addEventListener('click',undo);
+$('continueBtn').addEventListener('click',()=>{result=null;resetChoice()});$('restartBtn').addEventListener('click',()=>{saveState();resetChoice()});
+$('spaceBtn').addEventListener('click',()=>addToken('SPACE'));$('deleteBtn').addEventListener('click',()=>addToken('BACKSPACE'));
+$('spaceKey').addEventListener('click',()=>addToken('SPACE'));$('deleteKey').addEventListener('click',()=>addToken('BACKSPACE'));
+$('speakBtn').addEventListener('click',()=>speak(phrase));$('speakKey').addEventListener('click',()=>speak(phrase));
+$('clearBtn').addEventListener('click',()=>{if(phrase&&!confirm('Clear the current message?'))return;saveState();phrase='';resetChoice()});
+$('spellTab').addEventListener('click',()=>selectMode('spell'));$('needsTab').addEventListener('click',()=>selectMode('needs'));$('lettersTab').addEventListener('click',()=>selectMode('direct'));
+window.addEventListener('keydown',e=>{if(e.target.tagName==='BUTTON'||mode==='direct'||e.altKey||e.ctrlKey||e.metaKey)return;if(e.key==='ArrowLeft'){e.preventDefault();answer(true)}else if(e.key==='ArrowRight'){e.preventDefault();answer(false)}});
+resetChoice();
+})();
+</script></body></html>
